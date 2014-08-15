@@ -52,7 +52,7 @@ class EusignDSTU(BaseAuth):
     SCOPE_SEPARATOR = ','
     EXTRA_DATA = [
         ('taxid', 'taxid'),
-#        ('expires', 'expires')
+       # ('expires', 'expires')
     ]
 
     def user_data(self, access_token, *args, **kwargs):

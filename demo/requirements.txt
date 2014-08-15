@@ -2,3 +2,4 @@ flask
 flask-sqlalchemy
 flask-login
 python-social-auth
+-e git+git@github.com:dstucrypt/social.eusign.git#egg=social.eusign

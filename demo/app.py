@@ -1,5 +1,7 @@
 from flask import Flask, g, render_template, redirect
-from social.apps.flask_app.routes import social_auth, init_social
+from social.apps.flask_app.routes import social_auth
+from social.apps.flask_app.models import init_social
+from social.apps.flask_app.template_filters import backends
 
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.login import LoginManager, current_user, logout_user, UserMixin
@@ -14,16 +16,6 @@ login_manager.init_app(app)
 db = SQLAlchemy(app)
 init_social(app, db)
 
-
-class User(db.Model, UserMixin):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True)
-    fullname = db.Column(db.String(100))
-    email = db.Column(db.String(200))
-    tax_id = db.Column(db.String(16))
-
-
 @app.before_request
 def set_g_user():
     g.user = current_user._get_current_object()
@@ -31,6 +23,7 @@ def set_g_user():
 
 @login_manager.user_loader
 def load_user(userid):
+    from models import User
     try:
         return User.query.get(int(userid))
     except (TypeError, ValueError):
@@ -47,7 +40,3 @@ def logout():
     logout_user()
     return redirect('/')
 
-
-if __name__ == '__main__':
-    db.create_all()
-    app.run(debug=True, port=8000)
