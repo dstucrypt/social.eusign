@@ -1,0 +1,19 @@
+<html>
+<head>
+<title>Main</title>
+</head>
+<body>
+{%  macro login_button(provider='') -%}
+<a href="{{ url_for("social.auth", backend=provider) }}{% if next %}?next={{next}}{% endif %}" class="btn btn-default btn-lg">{{ provider }}</a>
+{% endmacro -%}
+
+{{ login_button(provider='eusign') }}
+{{ login_button(provider='eusign_oauth2') }}
+
+<div>
+    User {{user.username}} {{user.fullname}} <a href="/logout">Logout</a>
+</div>
+
+</body>
+</html>
+
