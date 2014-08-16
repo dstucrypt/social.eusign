@@ -16,7 +16,10 @@ setup(
     install_requires=[
         'requests'
     ],
+    license='BSD',
     classifiers=[
+        'Topic :: Internet',
+        'License :: OSI Approved :: BSD License',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
