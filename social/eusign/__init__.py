@@ -2,7 +2,8 @@ from social.backends.base import BaseAuth
 from social.backends.oauth import BaseOAuth2
 from social.exceptions import AuthCanceled, AuthUnknownError, \
                               AuthMissingParameter, AuthStateMissing, \
-                              AuthStateForbidden
+                              AuthStateForbidden, \
+                              WrongBackend
 
 from requests import HTTPError
 
@@ -11,6 +12,13 @@ EUSIGN_HOST = "https://eusign.org"
 # http://zakon4.rada.gov.ua/laws/show/z1399-12
 DRFO_ID = '1.2.804.2.1.1.1.11.1.4.1.1'
 DAEMON_VERSION = "0.4.2"
+
+
+class Misconfigured(WrongBackend):
+    def __str__(self):
+        return ("Backend {} configuration is incomplete."
+                "set APP_ID and DSTUD_URL to correct values".format(
+                    self.backend_name))
 
 
 class Eusign(BaseOAuth2):
@@ -52,8 +60,11 @@ class EusignDSTU(BaseAuth):
     SCOPE_SEPARATOR = ','
     EXTRA_DATA = [
         ('taxid', 'taxid'),
-       # ('expires', 'expires')
     ]
+
+    def state_token(self):
+        """Generate csrf token to include as state parameter."""
+        return self.strategy.random_string(32)
 
     def user_data(self, access_token, *args, **kwargs):
         """Loads user data from service"""
@@ -66,7 +77,9 @@ class EusignDSTU(BaseAuth):
         if state is None:
             state = self.state_token()
             self.strategy.session_set(name, state)
-            print 'set state', name, state
+
+        if not self.app_id or not self.dstud_url:
+            raise Misconfigured(self.name)
 
         return self.AUTHORIZATION_URL.format(app_id=self.app_id, state=state)
 
@@ -83,8 +96,6 @@ class EusignDSTU(BaseAuth):
             else:
                 raise
         except Exception as ex:
-            print 'ex', ex
-            raise
             raise AuthUnknownError(self)
 
         if response is None:
@@ -166,6 +177,9 @@ class EusignDSTU(BaseAuth):
             "last_name": response.get('SN') or name[-1],
         }
 
+    def get_user_id(self, details, response):
+        return response['tax_id']
+
     def auth_complete_params(self, state=None):
         return {
             "nonce": self.data.get('nonce'),
@@ -179,5 +193,5 @@ class EusignDSTU(BaseAuth):
 
     @property
     def dstud_url(self):
-        return self.setting('DSTUD_URL')
+        return self.setting('DSTUD_URL', 'http://localhost:8013')
 
