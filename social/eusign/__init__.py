@@ -129,7 +129,8 @@ class EusignDSTU(BaseAuth):
         body = 'c={cert}&d={data}&s={sign}'.format(cert=cert, data=check_data,
                                                    sign=sign)
         return self.request(url, method='POST', data=body,
-            headers={"Expect": "Version=%s", })
+            headers={"Expect": "Version={}".format(DAEMON_VERSION)}
+        )
 
     def parse_user(self, dstu_data):
         ret = {}
