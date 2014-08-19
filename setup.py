@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="social.eusign",
-    version='0.1',
+    version='0.2',
     url='https://github.com/dstucrypt/social.eusign',
     description='python-social-auth plugin for EUSign.org',
     author='Ilya Petrov, Mikhail Kashkin',
