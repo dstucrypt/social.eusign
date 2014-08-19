@@ -24,7 +24,7 @@ class Misconfigured(WrongBackend):
 class Eusign(BaseOAuth2):
     name = 'eusign'
 
-    AUTHORIZATION_URL = EUSIGN_HOST+'/oauth'
+    AUTHORIZATION_URL = EUSIGN_HOST+'/oauth/authorize'
     ACCESS_TOKEN_URL = EUSIGN_HOST+'/oauth/token'
     API_BASE = EUSIGN_HOST
 
